@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">VK_Internship_2019</string>
+    <string name="choose_folder_btn">Выбрать папку</string>
+    <string name="choose_folder_hint">Выберите папку с аудиозаписями</string>
+    <string name="where_to_play_music">Откуда играть музыку?</string>
+    <string name="please_wait">Подождите, песни обрабатываются</string>
+    <string name="undefined">Неизвестный</string>
+    <string name="zero_length">-0:00</string>
+</resources>

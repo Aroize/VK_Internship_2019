@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="boldTextColor">#2C2D2E</color>
+    <color name="sampleTextColor">#71757A</color>
+    <color name="mainBackground">#EBEDF0</color>
+    <color name="colorMiniPlayerText">#2C2D2E</color>
+</resources>
