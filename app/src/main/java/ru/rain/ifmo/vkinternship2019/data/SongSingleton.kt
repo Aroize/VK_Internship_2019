@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import android.os.Handler
+import android.os.Message
 import ru.rain.ifmo.vkinternship2019.R
 import ru.rain.ifmo.vkinternship2019.domain.PrepareSongListener
 
@@ -26,11 +28,36 @@ class SongSingleton private constructor() {
             }
     }
 
+    private val handlerCallback = Handler.Callback {
+        prepareSongListener?.finishPreparing()
+        isRunning = false
+        true
+    }
+
+    private val handler = Handler(handlerCallback)
+
     private val retriever = MediaMetadataRetriever()
 
     lateinit var storage: MusicFolder
 
     val playList = arrayListOf<Song>()
+
+    private var index = 0
+
+    fun currentSong(): Song = playList[index]
+
+
+    fun nextSong(): Song {
+        index = (index + 1) % playList.size
+        return playList[index]
+    }
+
+    fun prevSong(): Song {
+        index--
+        if (index < 0)
+            index = playList.size - 1
+        return playList[index]
+    }
 
     private var isRunning = false
 
@@ -43,30 +70,37 @@ class SongSingleton private constructor() {
     }
 
     fun mapFolderToPlaylist(context: Context) {
-        if (this::storage.isInitialized)
+        if (this::storage.isInitialized) {
             Thread {
                 isRunning = true
+                index = 0
                 val undefined = context.getString(R.string.undefined)
                 playList.clear()
                 prepareSongListener?.startPreparing()
                 val uris = storage.songs
                 uris.forEach {
-                    retriever.setDataSource(context,it)
+                    retriever.setDataSource(context, it)
                     val byteArray = retriever.embeddedPicture
                     var bitmap: Bitmap? = null
                     if (byteArray != null) {
                         bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
                     }
                     val name = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                    val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                    val length = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    playList.add(Song(bitmap,
-                                name ?: undefined,
-                                artist ?: undefined,
-                                       length.toLong()))
+                    val artist =
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                    val length =
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    playList.add(
+                        Song(
+                            bitmap,
+                            name ?: undefined,
+                            artist ?: undefined,
+                            length.toLong()
+                        )
+                    )
                 }
-                prepareSongListener?.finishPreparing()
-                isRunning = false
+                handler.sendEmptyMessage(0)
             }.start()
+        }
     }
 }

@@ -1,4 +1,4 @@
-package ru.rain.ifmo.vkinternship2019.screen.activity
+package ru.rain.ifmo.vkinternship2019.presentation.activity
 
 import android.app.Activity
 import android.content.Context
