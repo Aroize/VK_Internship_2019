@@ -1,4 +1,4 @@
-package ru.rain.ifmo.vkinternship2019.domain
+package ru.rain.ifmo.vkinternship2019.domain.mvp
 
 /**
  * @project VK_Internship_2019

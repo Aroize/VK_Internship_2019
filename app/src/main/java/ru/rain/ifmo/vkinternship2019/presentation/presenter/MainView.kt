@@ -1,8 +1,8 @@
 package ru.rain.ifmo.vkinternship2019.presentation.presenter
 
-import ru.rain.ifmo.vkinternship2019.data.MusicFolder
-import ru.rain.ifmo.vkinternship2019.data.Song
-import ru.rain.ifmo.vkinternship2019.domain.MvpView
+import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
+import ru.rain.ifmo.vkinternship2019.data.song.Song
+import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpView
 
 /**
  * @project VK_Internship_2019

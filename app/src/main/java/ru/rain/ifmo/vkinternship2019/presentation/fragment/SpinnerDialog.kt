@@ -1,4 +1,4 @@
-package ru.rain.ifmo.vkinternship2019.data
+package ru.rain.ifmo.vkinternship2019.presentation.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

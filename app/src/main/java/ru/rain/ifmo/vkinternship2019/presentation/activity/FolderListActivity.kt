@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_folder_list.*
-import ru.rain.ifmo.vkinternship2019.data.MusicFolder
+import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
 import ru.rain.ifmo.vkinternship2019.R
-import ru.rain.ifmo.vkinternship2019.data.SongSingleton
+import ru.rain.ifmo.vkinternship2019.data.song.SongSingleton
 
 /**
  * @project VK_Internship_2019

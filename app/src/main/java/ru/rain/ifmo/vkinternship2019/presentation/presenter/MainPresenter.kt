@@ -5,10 +5,10 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import ru.rain.ifmo.vkinternship2019.data.SongSingleton
-import ru.rain.ifmo.vkinternship2019.domain.BasePresenter
-import ru.rain.ifmo.vkinternship2019.domain.MainState
-import ru.rain.ifmo.vkinternship2019.domain.MvpState
+import ru.rain.ifmo.vkinternship2019.data.song.SongSingleton
+import ru.rain.ifmo.vkinternship2019.domain.mvp.BasePresenter
+import ru.rain.ifmo.vkinternship2019.domain.mvp.MainState
+import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpState
 import ru.rain.ifmo.vkinternship2019.domain.PrepareSongListener
 import ru.rain.ifmo.vkinternship2019.pair2folder
 import java.io.File
@@ -35,7 +35,11 @@ class MainPresenter: BasePresenter<MainView>() {
             songSingleton.currentSong()
         else
             null
-        return MainState(isSpinnerRunning, playerState, song)
+        return MainState(
+            isSpinnerRunning,
+            playerState,
+            song
+        )
     }
 
     @Suppress("Deprecation")

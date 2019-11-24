@@ -4,19 +4,17 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.rain.ifmo.vkinternship2019.App
 import ru.rain.ifmo.vkinternship2019.R
-import ru.rain.ifmo.vkinternship2019.data.MusicFolder
-import ru.rain.ifmo.vkinternship2019.data.Song
-import ru.rain.ifmo.vkinternship2019.data.SpinnerDialog
-import ru.rain.ifmo.vkinternship2019.domain.AbstractPlayerFragment
-import ru.rain.ifmo.vkinternship2019.domain.MainState
-import ru.rain.ifmo.vkinternship2019.domain.MvpState
+import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
+import ru.rain.ifmo.vkinternship2019.data.song.Song
+import ru.rain.ifmo.vkinternship2019.presentation.fragment.SpinnerDialog
+import ru.rain.ifmo.vkinternship2019.presentation.fragment.AbstractPlayerFragment
+import ru.rain.ifmo.vkinternship2019.domain.mvp.MainState
+import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpState
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.MiniPlayerFragment
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainPresenter
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainView
@@ -29,7 +27,8 @@ class MainActivity : AppCompatActivity(), MainView {
         private const val SPINNER_TAG = "spinner.tag"
     }
 
-    private var spinnerDialog: SpinnerDialog = SpinnerDialog()
+    private var spinnerDialog: SpinnerDialog =
+        SpinnerDialog()
 
     private var loadSongs = false
 

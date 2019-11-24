@@ -1,12 +1,12 @@
-package ru.rain.ifmo.vkinternship2019.data
+package ru.rain.ifmo.vkinternship2019.data.song
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Handler
-import android.os.Message
 import ru.rain.ifmo.vkinternship2019.R
+import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
 import ru.rain.ifmo.vkinternship2019.domain.PrepareSongListener
 
 /**
@@ -22,7 +22,8 @@ class SongSingleton private constructor() {
         val instance: SongSingleton
             get() {
                 if (singleton == null) {
-                    singleton = SongSingleton()
+                    singleton =
+                        SongSingleton()
                 }
                 return singleton as SongSingleton
             }

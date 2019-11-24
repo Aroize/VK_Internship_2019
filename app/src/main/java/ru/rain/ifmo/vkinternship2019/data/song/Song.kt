@@ -1,4 +1,4 @@
-package ru.rain.ifmo.vkinternship2019.data
+package ru.rain.ifmo.vkinternship2019.data.song
 
 import android.graphics.Bitmap
 

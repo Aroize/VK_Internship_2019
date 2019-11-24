@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import ru.rain.ifmo.vkinternship2019.R
-import ru.rain.ifmo.vkinternship2019.data.Song
-import ru.rain.ifmo.vkinternship2019.domain.AbstractPlayerFragment
+import ru.rain.ifmo.vkinternship2019.data.song.Song
 import ru.rain.ifmo.vkinternship2019.toPlayerDuration
 
 /**

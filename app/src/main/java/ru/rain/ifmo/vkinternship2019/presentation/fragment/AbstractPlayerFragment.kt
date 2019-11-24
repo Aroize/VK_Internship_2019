@@ -1,7 +1,7 @@
-package ru.rain.ifmo.vkinternship2019.domain
+package ru.rain.ifmo.vkinternship2019.presentation.fragment
 
 import androidx.fragment.app.Fragment
-import ru.rain.ifmo.vkinternship2019.data.Song
+import ru.rain.ifmo.vkinternship2019.data.song.Song
 
 /**
  * @project VK_Internship_2019

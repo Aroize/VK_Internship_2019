@@ -1,6 +1,6 @@
-package ru.rain.ifmo.vkinternship2019.domain
+package ru.rain.ifmo.vkinternship2019.domain.mvp
 
-import ru.rain.ifmo.vkinternship2019.data.Song
+import ru.rain.ifmo.vkinternship2019.data.song.Song
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainPresenter
 
 /**

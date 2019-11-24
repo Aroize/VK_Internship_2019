@@ -1,7 +1,7 @@
 package ru.rain.ifmo.vkinternship2019
 
 import android.net.Uri
-import ru.rain.ifmo.vkinternship2019.data.MusicFolder
+import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
 import java.lang.StringBuilder
 
 /**
@@ -29,12 +29,22 @@ fun ArrayList<Pair<String, Uri>>.pair2folder(): ArrayList<MusicFolder> {
         if (currentParent == newParent) {
             currentSongs.add(newSong)
         } else {
-            result.add(MusicFolder(currentParent, currentSongs))
+            result.add(
+                MusicFolder(
+                    currentParent,
+                    currentSongs
+                )
+            )
             currentParent = newParent
             currentSongs = arrayListOf(newSong)
         }
     } while (iterator.hasNext())
-    result.add(MusicFolder(currentParent, currentSongs))
+    result.add(
+        MusicFolder(
+            currentParent,
+            currentSongs
+        )
+    )
     return result
 }
 
