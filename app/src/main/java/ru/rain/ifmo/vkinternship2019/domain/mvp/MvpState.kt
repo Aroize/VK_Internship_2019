@@ -11,4 +11,5 @@ sealed class MvpState
 
 data class MainState(val showSpinner: Boolean,
                      val player: MainPresenter.Player,
-                     val song: Song? = null): MvpState()
+                     val song: Song? = null,
+                     val isPlaying: Boolean = false): MvpState()

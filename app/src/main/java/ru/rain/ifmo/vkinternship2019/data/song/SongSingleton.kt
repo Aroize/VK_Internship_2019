@@ -96,7 +96,8 @@ class SongSingleton private constructor() {
                             bitmap,
                             name ?: undefined,
                             artist ?: undefined,
-                            length.toLong()
+                            length.toLong(),
+                            it
                         )
                     )
                 }

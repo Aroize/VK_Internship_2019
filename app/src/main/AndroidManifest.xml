@@ -3,6 +3,7 @@
     package="ru.rain.ifmo.vkinternship2019">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -20,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name="ru.rain.ifmo.vkinternship2019.presentation.activity.FolderListActivity"/>
+        <service android:name=".domain.PlayerService"/>
     </application>
 
 </manifest>

@@ -11,11 +11,13 @@ import ru.rain.ifmo.vkinternship2019.App
 import ru.rain.ifmo.vkinternship2019.R
 import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
 import ru.rain.ifmo.vkinternship2019.data.song.Song
-import ru.rain.ifmo.vkinternship2019.presentation.fragment.SpinnerDialog
-import ru.rain.ifmo.vkinternship2019.presentation.fragment.AbstractPlayerFragment
+import ru.rain.ifmo.vkinternship2019.domain.PlayerEvent
+import ru.rain.ifmo.vkinternship2019.domain.PlayerService
 import ru.rain.ifmo.vkinternship2019.domain.mvp.MainState
 import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpState
+import ru.rain.ifmo.vkinternship2019.presentation.fragment.AbstractPlayerFragment
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.MiniPlayerFragment
+import ru.rain.ifmo.vkinternship2019.presentation.fragment.SpinnerDialog
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainPresenter
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainView
 
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity(), MainView {
         super.onResumeFragments()
         if (loadSongs) {
             loadSongs = false
-            presenter.loadSongs(applicationContext)
+            presenter.loadSongs()
         }
     }
 
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity(), MainView {
                 dismissSpinner()
             }
             state.song ?: return
-            updateSongInfo(state.song)
+            updateSongInfo(state.song, state.isPlaying)
         }
     }
 
@@ -121,17 +123,16 @@ class MainActivity : AppCompatActivity(), MainView {
         }
     }
 
-    override fun showMainPlayer(song: Song) {
+    override fun showMainPlayer() {
 
     }
 
-    override fun showMiniPlayer(song: Song) {
+    override fun showMiniPlayer() {
         val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? AbstractPlayerFragment
         if (fragment == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, MiniPlayerFragment())
                 .commitNow()
-            updateSongInfo(song)
         }
     }
 
@@ -139,9 +140,13 @@ class MainActivity : AppCompatActivity(), MainView {
 
     }
 
-    override fun updateSongInfo(song: Song) {
+    override fun updateSongInfo(song: Song, isPlaying: Boolean) {
         val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? AbstractPlayerFragment
         fragment ?: return
-        fragment.updateInfo(song)
+        fragment.updateInfo(song, isPlaying)
+    }
+
+    fun onPlayerEvent(event: PlayerEvent, seekValue : Int = 0) {
+        presenter.onPlayerEvent(event, seekValue)
     }
 }

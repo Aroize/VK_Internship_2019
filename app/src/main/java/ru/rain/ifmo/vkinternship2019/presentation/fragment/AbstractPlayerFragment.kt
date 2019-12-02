@@ -8,5 +8,5 @@ import ru.rain.ifmo.vkinternship2019.data.song.Song
  * @author Ilia Ilmenskii created on 24.11.2019
  */
 abstract class AbstractPlayerFragment: Fragment() {
-    abstract fun updateInfo(song: Song)
+    abstract fun updateInfo(song: Song, isPlaying: Boolean)
 }

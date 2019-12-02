@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import kotlinx.android.synthetic.main.fragment_mini_player.*
 import ru.rain.ifmo.vkinternship2019.R
 import ru.rain.ifmo.vkinternship2019.data.song.Song
+import ru.rain.ifmo.vkinternship2019.domain.PlayerEvent
+import ru.rain.ifmo.vkinternship2019.presentation.activity.MainActivity
 import ru.rain.ifmo.vkinternship2019.toPlayerDuration
 
 /**
@@ -32,10 +35,18 @@ class MiniPlayerFragment : AbstractPlayerFragment() {
         title = rootView.findViewById(R.id.song_title)
         title.isSelected = true
         length = rootView.findViewById(R.id.song_length)
+        rootView.findViewById<View>(R.id.mini_next_btn).setOnClickListener {
+            activity ?: return@setOnClickListener
+            (activity as MainActivity).onPlayerEvent(PlayerEvent.NEXT)
+        }
+        rootView.findViewById<View>(R.id.pause_play_btn).setOnClickListener {
+            activity ?: return@setOnClickListener
+            (activity as MainActivity).onPlayerEvent(PlayerEvent.PLAY_PAUSE)
+        }
         return rootView
     }
 
-    override fun updateInfo(song: Song) {
+    override fun updateInfo(song: Song, isPlaying: Boolean) {
         if (song.albumImage == null) {
             albumImageView.setImageResource(R.drawable.itunes_no_artwork)
         } else {
@@ -43,5 +54,10 @@ class MiniPlayerFragment : AbstractPlayerFragment() {
         }
         title.text = song.author
         length.text = song.length.toPlayerDuration()
+        if (isPlaying) {
+            pause_play_btn.setImageResource(R.drawable.ic_pause_28)
+        } else {
+            pause_play_btn.setImageResource(R.drawable.ic_play_48)
+        }
     }
 }

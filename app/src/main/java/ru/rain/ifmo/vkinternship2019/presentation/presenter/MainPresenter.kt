@@ -3,9 +3,12 @@ package ru.rain.ifmo.vkinternship2019.presentation.presenter
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import ru.rain.ifmo.vkinternship2019.data.song.SongSingleton
+import ru.rain.ifmo.vkinternship2019.domain.PlayerEvent
+import ru.rain.ifmo.vkinternship2019.domain.PlayerService
 import ru.rain.ifmo.vkinternship2019.domain.mvp.BasePresenter
 import ru.rain.ifmo.vkinternship2019.domain.mvp.MainState
 import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpState
@@ -17,7 +20,7 @@ import java.io.File
  * @project VK_Internship_2019
  * @author Ilia Ilmenskii created on 24.11.2019
  */
-class MainPresenter: BasePresenter<MainView>() {
+class MainPresenter(private val context: Context): BasePresenter<MainView>() {
 
     enum class Player {
         MINI,
@@ -77,7 +80,7 @@ class MainPresenter: BasePresenter<MainView>() {
         }.start()
     }
 
-    fun loadSongs(context: Context) {
+    fun loadSongs() {
         songSingleton.prepareSongListener = object : PrepareSongListener {
             override fun startPreparing() {
                 viewState?.showSpinner()
@@ -85,6 +88,9 @@ class MainPresenter: BasePresenter<MainView>() {
             }
 
             override fun finishPreparing() {
+                val intent = Intent(context, PlayerService::class.java)
+                intent.putExtra(PlayerService.PLAYER_EVENT_EXTRA, PlayerEvent.LOAD_PLAYLIST.toInt())
+                context.startService(intent)
                 viewState?.dismissSpinner()
                 setPlayer(if (songSingleton.playList.isEmpty()) Player.EMPTY else Player.MINI)
                 isSpinnerRunning = false
@@ -97,14 +103,24 @@ class MainPresenter: BasePresenter<MainView>() {
         playerState = player
         when (player) {
             Player.MINI -> {
-                viewState?.showMiniPlayer(songSingleton.currentSong())
+                viewState?.showMiniPlayer()
             }
             Player.MAIN -> {
-                viewState?.showMainPlayer(songSingleton.currentSong())
+                viewState?.showMainPlayer()
             }
             Player.EMPTY -> {
                 viewState?.hidePlayer()
             }
         }
+        viewState?.updateSongInfo(songSingleton.currentSong(), PlayerService.isPlaying())
+    }
+
+    fun onPlayerEvent(event: PlayerEvent, seekValue: Int) {
+        val intent = Intent(context, PlayerService::class.java)
+        intent.putExtra(PlayerService.PLAYER_EVENT_EXTRA, event.toInt())
+        if (event == PlayerEvent.SEEK) {
+            intent.putExtra(PlayerService.SEEK_EXTRA, seekValue)
+        }
+        context.startService(intent)
     }
 }

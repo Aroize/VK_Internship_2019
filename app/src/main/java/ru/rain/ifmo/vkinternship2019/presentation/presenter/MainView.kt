@@ -15,11 +15,11 @@ interface MainView: MvpView {
 
     fun dismissSpinner()
 
-    fun showMiniPlayer(song: Song)
+    fun showMiniPlayer()
 
-    fun showMainPlayer(song: Song)
+    fun showMainPlayer()
 
     fun hidePlayer()
 
-    fun updateSongInfo(song: Song)
+    fun updateSongInfo(song: Song, isPlaying: Boolean)
 }
