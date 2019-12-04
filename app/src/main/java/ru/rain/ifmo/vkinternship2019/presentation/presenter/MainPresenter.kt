@@ -41,7 +41,8 @@ class MainPresenter(private val context: Context): BasePresenter<MainView>() {
         return MainState(
             isSpinnerRunning,
             playerState,
-            song
+            song,
+            PlayerService.isPlaying()
         )
     }
 
@@ -88,9 +89,7 @@ class MainPresenter(private val context: Context): BasePresenter<MainView>() {
             }
 
             override fun finishPreparing() {
-                val intent = Intent(context, PlayerService::class.java)
-                intent.putExtra(PlayerService.PLAYER_EVENT_EXTRA, PlayerEvent.LOAD_PLAYLIST.toInt())
-                context.startService(intent)
+                onPlayerEvent(PlayerEvent.NEW_PLAYLIST)
                 viewState?.dismissSpinner()
                 setPlayer(if (songSingleton.playList.isEmpty()) Player.EMPTY else Player.MINI)
                 isSpinnerRunning = false
@@ -115,12 +114,16 @@ class MainPresenter(private val context: Context): BasePresenter<MainView>() {
         viewState?.updateSongInfo(songSingleton.currentSong(), PlayerService.isPlaying())
     }
 
-    fun onPlayerEvent(event: PlayerEvent, seekValue: Int) {
+    fun onPlayerEvent(event: PlayerEvent, seekValue: Int = 0) {
         val intent = Intent(context, PlayerService::class.java)
         intent.putExtra(PlayerService.PLAYER_EVENT_EXTRA, event.toInt())
         if (event == PlayerEvent.SEEK) {
             intent.putExtra(PlayerService.SEEK_EXTRA, seekValue)
         }
         context.startService(intent)
+    }
+
+    fun updateState() {
+        viewState?.updateSongInfo(songSingleton.currentSong(), PlayerService.isPlaying())
     }
 }

@@ -1,7 +1,10 @@
 package ru.rain.ifmo.vkinternship2019.presentation.activity
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +39,8 @@ class MainActivity : AppCompatActivity(), MainView {
 
     private val presenter: MainPresenter by lazy(LazyThreadSafetyMode.NONE) { App.mainPresenter }
 
+    private lateinit var receiver: BroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,6 +55,15 @@ class MainActivity : AppCompatActivity(), MainView {
                 presenter.pickFolder(contentResolver)
             }
         }
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                p1 ?: return
+                if (p1.action == PlayerService::class.java.`package`.toString()) {
+                    presenter.updateState()
+                }
+            }
+        }
+        registerReceiver(receiver, IntentFilter(PlayerService::class.java.`package`.toString()))
     }
 
     override fun onRequestPermissionsResult(
@@ -93,6 +107,11 @@ class MainActivity : AppCompatActivity(), MainView {
         if (spinnerDialog.isAdded)
             spinnerDialog.dismiss()
         presenter.detach()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 
     override fun recoverState(state: MvpState) {

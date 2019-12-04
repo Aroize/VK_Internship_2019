@@ -5,7 +5,7 @@ enum class PlayerEvent {
     SEEK,
     NEXT,
     PREV,
-    LOAD_PLAYLIST;
+    NEW_PLAYLIST;
 
     fun toInt(): Int =
         when (this) {
@@ -13,6 +13,6 @@ enum class PlayerEvent {
             SEEK -> { 1 }
             NEXT -> { 2 }
             PREV -> { 3 }
-            LOAD_PLAYLIST -> { 4 }
+            NEW_PLAYLIST -> { 4 }
         }
 }

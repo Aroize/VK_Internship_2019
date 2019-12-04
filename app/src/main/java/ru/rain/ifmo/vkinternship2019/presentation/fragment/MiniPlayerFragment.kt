@@ -23,6 +23,7 @@ class MiniPlayerFragment : AbstractPlayerFragment() {
     private lateinit var albumImageView: ImageView
     private lateinit var title: TextView
     private lateinit var length: TextView
+    private var isPlaying = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +43,8 @@ class MiniPlayerFragment : AbstractPlayerFragment() {
         rootView.findViewById<View>(R.id.pause_play_btn).setOnClickListener {
             activity ?: return@setOnClickListener
             (activity as MainActivity).onPlayerEvent(PlayerEvent.PLAY_PAUSE)
+            isPlaying = !isPlaying
+            swapImage()
         }
         return rootView
     }
@@ -52,8 +55,13 @@ class MiniPlayerFragment : AbstractPlayerFragment() {
         } else {
             albumImageView.setImageBitmap(song.albumImage)
         }
-        title.text = song.author
+        title.text = song.name
         length.text = song.length.toPlayerDuration()
+        this.isPlaying = isPlaying
+        swapImage()
+    }
+
+    private fun swapImage() {
         if (isPlaying) {
             pause_play_btn.setImageResource(R.drawable.ic_pause_28)
         } else {
