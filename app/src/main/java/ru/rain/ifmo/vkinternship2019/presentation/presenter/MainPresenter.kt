@@ -67,8 +67,9 @@ class MainPresenter(private val context: Context): BasePresenter<MainView>() {
                     do {
                         val fileUri = ContentUris.withAppendedId(uri, cursor.getLong(idCol))
                         val path = cursor.getString(pathColId)
-                        val parentPath = File(path).parentFile?.absolutePath
-                        if (parentPath != null) {
+                        val file = File(path)
+                        val parentPath = file.parentFile?.absolutePath
+                        if (parentPath != null && file.extension == "mp3") {
                             list.add(Pair(parentPath, fileUri))
                         }
                     } while (cursor.moveToNext())
@@ -98,7 +99,7 @@ class MainPresenter(private val context: Context): BasePresenter<MainView>() {
         songSingleton.mapFolderToPlaylist(context)
     }
 
-    private fun setPlayer(player: Player) {
+    fun setPlayer(player: Player) {
         playerState = player
         when (player) {
             Player.MINI -> {
@@ -125,5 +126,13 @@ class MainPresenter(private val context: Context): BasePresenter<MainView>() {
 
     fun updateState() {
         viewState?.updateSongInfo(songSingleton.currentSong(), PlayerService.isPlaying())
+    }
+
+    fun swapPlayer() {
+        when (playerState) {
+            Player.MINI -> setPlayer(Player.MAIN)
+            Player.MAIN -> setPlayer(Player.MINI)
+            else -> setPlayer(Player.EMPTY)
+        }
     }
 }

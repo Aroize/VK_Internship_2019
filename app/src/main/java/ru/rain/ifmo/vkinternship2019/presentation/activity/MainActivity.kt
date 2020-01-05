@@ -1,12 +1,17 @@
 package ru.rain.ifmo.vkinternship2019.presentation.activity
 
+import android.animation.AnimatorSet
+import android.animation.ValueAnimator
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
+import android.media.browse.MediaBrowser
+import android.media.session.MediaController
+import android.media.session.PlaybackState
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +24,7 @@ import ru.rain.ifmo.vkinternship2019.domain.PlayerService
 import ru.rain.ifmo.vkinternship2019.domain.mvp.MainState
 import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpState
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.AbstractPlayerFragment
+import ru.rain.ifmo.vkinternship2019.presentation.fragment.MainPlayerFragment
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.MiniPlayerFragment
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.SpinnerDialog
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainPresenter
@@ -32,6 +38,9 @@ class MainActivity : AppCompatActivity(), MainView {
         private const val SPINNER_TAG = "spinner.tag"
     }
 
+    private lateinit var md: MediaBrowser
+    private lateinit var mc: MediaController
+
     private var spinnerDialog: SpinnerDialog =
         SpinnerDialog()
 
@@ -43,6 +52,37 @@ class MainActivity : AppCompatActivity(), MainView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        md = MediaBrowser(this,
+            ComponentName(this, PlayerService::class.java),
+            object : MediaBrowser.ConnectionCallback() {
+                override fun onConnected() {
+                    super.onConnected()
+                    Log.d("MEDIA_SESSION", "Connected")
+                    md.subscribe("ID",
+                        object : MediaBrowser.SubscriptionCallback() {
+                            override fun onChildrenLoaded(
+                                parentId: String,
+                                children: MutableList<MediaBrowser.MediaItem>
+                            ) {
+                                super.onChildrenLoaded(parentId, children)
+                                Log.d("MEDIA_SESSION", "onChildrenLoaded")
+                            }
+                        }
+                    )
+                    mc = MediaController(this@MainActivity, md.sessionToken)
+                    mc.registerCallback(object : MediaController.Callback() {
+                        override fun onPlaybackStateChanged(state: PlaybackState?) {
+                            super.onPlaybackStateChanged(state)
+                            Log.d("MEDIA_SESSION", "State : $state")
+                        }
+                    })
+                }
+            },
+            null
+            )
+        md.connect()
+
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
         choose_folder_btn.setOnClickListener {
@@ -143,20 +183,44 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     override fun showMainPlayer() {
-
+        choose_folder_btn.visibility = View.GONE
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, MainPlayerFragment())
+            .commitNow()
     }
 
     override fun showMiniPlayer() {
+        choose_folder_btn.visibility = View.VISIBLE
         val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? AbstractPlayerFragment
         if (fragment == null) {
+            val miniPlayer = MiniPlayerFragment()
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, MiniPlayerFragment())
+                .add(R.id.fragment_container, miniPlayer)
+                .commitNow()
+            val yAnimator = ValueAnimator.ofFloat(resources.getDimension(R.dimen.mini_player_height), 0f)
+            yAnimator.duration = 1_000
+            yAnimator.addUpdateListener {
+                miniPlayer.rootView.y = it.animatedValue as Float
+                miniPlayer.rootView.requestLayout()
+            }
+            val set = AnimatorSet()
+            set.interpolator = LinearInterpolator()
+            set.play(yAnimator)
+            set.start()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, MiniPlayerFragment())
                 .commitNow()
         }
     }
 
     override fun hidePlayer() {
-
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? AbstractPlayerFragment
+        fragment ?: return
+        choose_folder_btn.visibility = View.VISIBLE
+        supportFragmentManager.beginTransaction()
+            .remove(fragment)
+            .commitNow()
     }
 
     override fun updateSongInfo(song: Song, isPlaying: Boolean) {
@@ -168,4 +232,6 @@ class MainActivity : AppCompatActivity(), MainView {
     fun onPlayerEvent(event: PlayerEvent, seekValue : Int = 0) {
         presenter.onPlayerEvent(event, seekValue)
     }
+
+    fun swapPlayer() = presenter.swapPlayer()
 }

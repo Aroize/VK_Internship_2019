@@ -3,8 +3,12 @@ package ru.rain.ifmo.vkinternship2019.domain
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.media.browse.MediaBrowser
+import android.media.session.MediaSession
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
+import android.service.media.MediaBrowserService
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -23,7 +27,15 @@ import ru.rain.ifmo.vkinternship2019.data.song.SongSingleton
  * @project VK_Internship_2019
  * @author Ilia Ilmenskii created on 25.11.2019
  */
-class PlayerService : Service() {
+class PlayerService : MediaBrowserService() {
+
+    override fun onGetRoot(p0: String, p1: Int, p2: Bundle?): BrowserRoot? {
+        return null
+    }
+
+    override fun onLoadChildren(p0: String, p1: Result<MutableList<MediaBrowser.MediaItem>>) {
+
+    }
 
     companion object {
         const val SEEK_EXTRA = "seek.value"
@@ -37,6 +49,14 @@ class PlayerService : Service() {
             if (!this::exoPlayer.isInitialized)
                 return false
             return exoPlayer.isPlaying
+        }
+    }
+
+    private lateinit var mediaSession: MediaSession
+    private var mediaCallback = object : MediaSession.Callback() {
+        override fun onPlay() {
+            super.onPlay()
+            Log.d("MEDIA_SESSION", "onPlay override")
         }
     }
 
@@ -169,7 +189,6 @@ class PlayerService : Service() {
         notificationLayout.setOnClickPendingIntent(R.id.notif_prev, pendingIntentArray[2])
         return builder.setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setCustomContentView(notificationLayout)
             .setCustomBigContentView(notificationLayout)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .build()

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffffff"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp">
+
+        <ImageView
+            android:id="@+id/drop_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_dropdown_24" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/album_images"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:layout_constraintTop_toBottomOf="@+id/drop_down" />
+
+        <ImageView
+            android:id="@+id/more_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:tint="@color/main_vk_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/album_images"
+            app:srcCompat="@drawable/ic_ic_more_24dp" />
+
+        <ImageView
+            android:id="@+id/add_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:tint="@color/main_vk_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/album_images"
+            app:srcCompat="@drawable/ic_add_outline_24" />
+
+        <LinearLayout
+            android:id="@+id/track_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/more_btn"
+            app:layout_constraintStart_toEndOf="@+id/add_btn"
+            app:layout_constraintTop_toBottomOf="@+id/album_images">
+
+            <TextView
+                android:id="@+id/track_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="0"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:lines="1"
+                tools:text="My enemy"
+                android:textAlignment="center" />
+
+            <ImageView
+                android:id="@+id/explicit_icon"
+                android:tint="@android:color/darker_gray"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="0"
+                app:srcCompat="@drawable/ic_explicit_28" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/author_name"
+            android:textSize="16sp"
+            android:textColor="#528BCC"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            tools:text="CHVRCHES feat. Matt Berninger"
+            app:layout_constraintEnd_toStartOf="@+id/more_btn"
+            app:layout_constraintStart_toEndOf="@+id/add_btn"
+            app:layout_constraintTop_toBottomOf="@+id/track_container" />
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            android:progressTint="#2a83ff"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/author_name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_shuffle_24" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_repeat_24" />
+
+</RelativeLayout>

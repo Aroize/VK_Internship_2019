@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.rain.ifmo.vkinternship2019">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -12,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".App"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name="ru.rain.ifmo.vkinternship2019.presentation.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +23,12 @@
             </intent-filter>
         </activity>
         <activity android:name="ru.rain.ifmo.vkinternship2019.presentation.activity.FolderListActivity"/>
-        <service android:name=".domain.PlayerService"/>
+        <service android:name=".domain.PlayerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowser"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

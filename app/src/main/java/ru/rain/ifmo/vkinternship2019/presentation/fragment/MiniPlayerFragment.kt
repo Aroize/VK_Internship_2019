@@ -19,7 +19,7 @@ import ru.rain.ifmo.vkinternship2019.toPlayerDuration
  */
 class MiniPlayerFragment : AbstractPlayerFragment() {
 
-    private lateinit var rootView: View
+    lateinit var rootView: View
     private lateinit var albumImageView: ImageView
     private lateinit var title: TextView
     private lateinit var length: TextView
@@ -31,6 +31,9 @@ class MiniPlayerFragment : AbstractPlayerFragment() {
         savedInstanceState: Bundle?
     ): View? {
         rootView = inflater.inflate(R.layout.fragment_mini_player, container, false)
+        rootView.setOnClickListener {
+            (activity as MainActivity).swapPlayer()
+        }
         albumImageView = rootView.findViewById(R.id.mini_album_image)
         albumImageView.clipToOutline = true
         title = rootView.findViewById(R.id.song_title)
