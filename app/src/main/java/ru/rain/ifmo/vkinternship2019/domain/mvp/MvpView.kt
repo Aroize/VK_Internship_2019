@@ -5,5 +5,5 @@ package ru.rain.ifmo.vkinternship2019.domain.mvp
  * @author Ilia Ilmenskii created on 24.11.2019
  */
 interface MvpView {
-    fun recoverState(state: MvpState)
+    fun recoverState(showSpinner: Boolean)
 }

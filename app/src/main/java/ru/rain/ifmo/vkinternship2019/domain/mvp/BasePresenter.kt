@@ -7,13 +7,12 @@ package ru.rain.ifmo.vkinternship2019.domain.mvp
 abstract class BasePresenter<T : MvpView> {
 
     protected var viewState: T? = null
+    protected var showSpinner = false
 
     open fun attach(view: T) {
         viewState = view
-        viewState?.recoverState(getState())
+        viewState?.recoverState(showSpinner)
     }
-
-    abstract fun getState(): MvpState
 
     open fun detach() {
         viewState = null

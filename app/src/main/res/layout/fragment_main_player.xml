@@ -10,8 +10,10 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/shuffle_btn"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp">
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp">
 
         <ImageView
             android:id="@+id/drop_down"
@@ -33,7 +35,7 @@
             android:id="@+id/more_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:tint="@color/main_vk_color"
             app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:tint="@color/main_vk_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/album_images"
@@ -56,6 +58,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:gravity="center"
             android:orientation="horizontal"
@@ -69,62 +72,136 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_weight="0"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:textAlignment="center"
+                android:textColor="#222222"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#222222"
-                android:lines="1"
-                tools:text="My enemy"
-                android:textAlignment="center" />
+                tools:text="My enemy" />
 
             <ImageView
                 android:id="@+id/explicit_icon"
-                android:tint="@android:color/darker_gray"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_weight="0"
+                android:tint="@android:color/darker_gray"
                 app:srcCompat="@drawable/ic_explicit_28" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/author_name"
-            android:textSize="16sp"
-            android:textColor="#528BCC"
-            android:gravity="center"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            tools:text="CHVRCHES feat. Matt Berninger"
+            android:gravity="center"
+            android:textColor="#528BCC"
+            android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/more_btn"
             app:layout_constraintStart_toEndOf="@+id/add_btn"
-            app:layout_constraintTop_toBottomOf="@+id/track_container" />
+            app:layout_constraintTop_toBottomOf="@+id/track_container"
+            tools:text="CHVRCHES feat. Matt Berninger" />
 
-        <ProgressBar
-            android:id="@+id/progressBar2"
-            android:progressTint="#2a83ff"
-            style="?android:attr/progressBarStyleHorizontal"
+        <SeekBar
+            android:id="@+id/track_seek_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="24dp"
+            android:progressTint="#2a83ff"
+            android:thumbTint="#2a83ff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/author_name" />
+
+        <TextView
+            android:id="@+id/current_tack_pos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="2dp"
+            android:text="@string/zero_length"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/track_seek_bar" />
+
+        <TextView
+            android:id="@+id/track_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/zero_length"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/track_seek_bar" />
+
+        <ImageButton
+            android:id="@+id/play_pause_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@null"
+            android:tint="#2a83ff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/track_seek_bar"
+            app:srcCompat="@drawable/ic_play_48" />
+
+        <ImageButton
+            android:id="@+id/next_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:tint="#2a83ff"
+            app:layout_constraintBottom_toBottomOf="@+id/play_pause_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/play_pause_btn"
+            app:layout_constraintTop_toTopOf="@+id/play_pause_btn"
+            app:srcCompat="@drawable/ic_skip_next_48" />
+
+        <ImageButton
+            android:id="@+id/prev_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:rotation="180"
+            android:tint="#2a83ff"
+            app:layout_constraintBottom_toBottomOf="@+id/play_pause_btn"
+            app:layout_constraintEnd_toStartOf="@+id/play_pause_btn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/play_pause_btn"
+            app:srcCompat="@drawable/ic_skip_next_48" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/shuffle_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:background="@null"
+        android:tint="#528BCC"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_shuffle_24" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/repeat_btn"
+        android:paddingBottom="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@null"
+        android:tint="#528BCC"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

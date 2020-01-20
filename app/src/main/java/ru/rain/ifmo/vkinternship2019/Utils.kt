@@ -2,7 +2,6 @@ package ru.rain.ifmo.vkinternship2019
 
 import android.net.Uri
 import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
-import java.lang.StringBuilder
 
 /**
  * @project VK_Internship_2019
@@ -48,15 +47,17 @@ fun ArrayList<Pair<String, Uri>>.pair2folder(): ArrayList<MusicFolder> {
     return result
 }
 
-fun Long.toPlayerDuration(): String {
-    val sb = StringBuilder("-")
+fun Long.toPlayerDuration(includeDash: Boolean = true): String {
+    val sb = StringBuilder()
+    if (includeDash)
+        sb.append('-')
     val minutes = (this / 60000)
     val seconds = (this / 1000) % 60
     sb.append(minutes.toString())
     sb.append(':')
-    sb.append(seconds.toString())
     if (seconds < 10) {
         sb.append('0')
     }
+    sb.append(seconds.toString())
     return sb.toString()
 }

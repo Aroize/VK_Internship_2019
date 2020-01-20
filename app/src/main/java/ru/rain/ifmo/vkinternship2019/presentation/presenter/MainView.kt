@@ -20,6 +20,4 @@ interface MainView: MvpView {
     fun showMainPlayer()
 
     fun hidePlayer()
-
-    fun updateSongInfo(song: Song, isPlaying: Boolean)
 }

@@ -43,21 +43,25 @@ class SongSingleton private constructor() {
 
     val playList = arrayListOf<Song>()
 
-    private var index = 0
+    private var _index = 0
+    val index: Int
+    get() = _index
 
-    fun currentSong(): Song = playList[index]
-
+    fun currentSong(): Song {
+        while (playList.size == 0) {}
+        return playList[_index]
+    }
 
     fun nextSong(): Song {
-        index = (index + 1) % playList.size
-        return playList[index]
+        _index = (_index + 1) % playList.size
+        return playList[_index]
     }
 
     fun prevSong(): Song {
-        index--
-        if (index < 0)
-            index = playList.size - 1
-        return playList[index]
+        _index--
+        if (_index < 0)
+            _index = playList.size - 1
+        return playList[_index]
     }
 
     private var isRunning = false
@@ -74,7 +78,7 @@ class SongSingleton private constructor() {
         if (this::storage.isInitialized) {
             Thread {
                 isRunning = true
-                index = 0
+                _index = 0
                 val undefined = context.getString(R.string.undefined)
                 playList.clear()
                 prepareSongListener?.startPreparing()

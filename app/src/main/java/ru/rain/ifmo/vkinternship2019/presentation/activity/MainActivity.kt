@@ -1,28 +1,23 @@
 package ru.rain.ifmo.vkinternship2019.presentation.activity
 
 import android.animation.AnimatorSet
-import android.animation.ValueAnimator
+import android.animation.ObjectAnimator
 import android.app.Activity
-import android.content.*
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.browse.MediaBrowser
-import android.media.session.MediaController
-import android.media.session.PlaybackState
+import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.rain.ifmo.vkinternship2019.App
 import ru.rain.ifmo.vkinternship2019.R
 import ru.rain.ifmo.vkinternship2019.data.filesystem.MusicFolder
-import ru.rain.ifmo.vkinternship2019.data.song.Song
-import ru.rain.ifmo.vkinternship2019.domain.PlayerEvent
 import ru.rain.ifmo.vkinternship2019.domain.PlayerService
-import ru.rain.ifmo.vkinternship2019.domain.mvp.MainState
-import ru.rain.ifmo.vkinternship2019.domain.mvp.MvpState
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.AbstractPlayerFragment
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.MainPlayerFragment
 import ru.rain.ifmo.vkinternship2019.presentation.fragment.MiniPlayerFragment
@@ -30,16 +25,21 @@ import ru.rain.ifmo.vkinternship2019.presentation.fragment.SpinnerDialog
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainPresenter
 import ru.rain.ifmo.vkinternship2019.presentation.presenter.MainView
 
+
 class MainActivity : AppCompatActivity(), MainView {
 
     companion object {
-        private const val PERMISSION_WRITE_EXTERNAL = 101
-        private const val REQUEST_PICK_FOLDER = 102
-        private const val SPINNER_TAG = "spinner.tag"
-    }
 
-    private lateinit var md: MediaBrowser
-    private lateinit var mc: MediaController
+        private const val PERMISSION_WRITE_EXTERNAL = 101
+
+        private const val REQUEST_PICK_FOLDER = 102
+
+        private const val SPINNER_TAG = "spinner.tag"
+
+        private const val MAIN_DURATION_FULL = 1_000L
+
+        private const val MINI_DURATION_FULL = 500L
+    }
 
     private var spinnerDialog: SpinnerDialog =
         SpinnerDialog()
@@ -48,42 +48,13 @@ class MainActivity : AppCompatActivity(), MainView {
 
     private val presenter: MainPresenter by lazy(LazyThreadSafetyMode.NONE) { App.mainPresenter }
 
-    private lateinit var receiver: BroadcastReceiver
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        md = MediaBrowser(this,
-            ComponentName(this, PlayerService::class.java),
-            object : MediaBrowser.ConnectionCallback() {
-                override fun onConnected() {
-                    super.onConnected()
-                    Log.d("MEDIA_SESSION", "Connected")
-                    md.subscribe("ID",
-                        object : MediaBrowser.SubscriptionCallback() {
-                            override fun onChildrenLoaded(
-                                parentId: String,
-                                children: MutableList<MediaBrowser.MediaItem>
-                            ) {
-                                super.onChildrenLoaded(parentId, children)
-                                Log.d("MEDIA_SESSION", "onChildrenLoaded")
-                            }
-                        }
-                    )
-                    mc = MediaController(this@MainActivity, md.sessionToken)
-                    mc.registerCallback(object : MediaController.Callback() {
-                        override fun onPlaybackStateChanged(state: PlaybackState?) {
-                            super.onPlaybackStateChanged(state)
-                            Log.d("MEDIA_SESSION", "State : $state")
-                        }
-                    })
-                }
-            },
-            null
-            )
-        md.connect()
-
         setContentView(R.layout.activity_main)
+        if (supportFragmentManager.findFragmentById(R.id.fragment_container) is MainPlayerFragment) {
+            choose_folder_btn.alpha = 0f
+            choose_folder_btn.visibility = View.GONE
+        }
         supportActionBar?.hide()
         choose_folder_btn.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this,
@@ -95,15 +66,6 @@ class MainActivity : AppCompatActivity(), MainView {
                 presenter.pickFolder(contentResolver)
             }
         }
-        receiver = object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-                p1 ?: return
-                if (p1.action == PlayerService::class.java.`package`.toString()) {
-                    presenter.updateState()
-                }
-            }
-        }
-        registerReceiver(receiver, IntentFilter(PlayerService::class.java.`package`.toString()))
     }
 
     override fun onRequestPermissionsResult(
@@ -123,6 +85,8 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_PICK_FOLDER && resultCode == Activity.RESULT_OK) {
             loadSongs = true
+            val manager = LocalBroadcastManager.getInstance(this)
+            manager.sendBroadcast(Intent(PlayerService.ACTION_NEW_PLAYLIST))
         }
     }
 
@@ -142,27 +106,18 @@ class MainActivity : AppCompatActivity(), MainView {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         if (spinnerDialog.isAdded)
             spinnerDialog.dismiss()
         presenter.detach()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(receiver)
-    }
-
-    override fun recoverState(state: MvpState) {
-        if (state is MainState) {
-            if (state.showSpinner) {
-                showSpinner()
-            } else {
-                dismissSpinner()
-            }
-            state.song ?: return
-            updateSongInfo(state.song, state.isPlaying)
+    override fun recoverState(showSpinner: Boolean) {
+        if (showSpinner) {
+            showSpinner()
+        } else {
+            dismissSpinner()
         }
     }
 
@@ -183,10 +138,29 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     override fun showMainPlayer() {
-        choose_folder_btn.visibility = View.GONE
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, MainPlayerFragment())
-            .commitNow()
+        val miniFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as MiniPlayerFragment
+        val miniAnimator = ObjectAnimator.ofFloat(miniFragment.rootView, "y", 0f, resources.getDimension(R.dimen.mini_player_height))
+        miniAnimator.duration = MINI_DURATION_FULL
+        miniAnimator.doOnEnd {
+            choose_folder_btn.visibility = View.GONE
+            val fragment = MainPlayerFragment()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commitNow()
+            val mainView = fragment.fragmentView
+            val yAnimator = ObjectAnimator.ofFloat(mainView, "y", displayHeight().toFloat(), 0f)
+            yAnimator.duration = MAIN_DURATION_FULL
+            val set = AnimatorSet()
+            set.interpolator = LinearInterpolator()
+            set.play(yAnimator)
+            set.start()
+        }
+        val alphaAnimator = ObjectAnimator.ofFloat(choose_folder_btn, "alpha", 0f)
+        alphaAnimator.duration = MINI_DURATION_FULL
+        val set = AnimatorSet()
+        set.playTogether(miniAnimator, alphaAnimator)
+        set.interpolator = LinearInterpolator()
+        set.start()
     }
 
     override fun showMiniPlayer() {
@@ -197,20 +171,36 @@ class MainActivity : AppCompatActivity(), MainView {
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, miniPlayer)
                 .commitNow()
-            val yAnimator = ValueAnimator.ofFloat(resources.getDimension(R.dimen.mini_player_height), 0f)
-            yAnimator.duration = 1_000
-            yAnimator.addUpdateListener {
-                miniPlayer.rootView.y = it.animatedValue as Float
-                miniPlayer.rootView.requestLayout()
-            }
             val set = AnimatorSet()
             set.interpolator = LinearInterpolator()
-            set.play(yAnimator)
+            set.play(ObjectAnimator.ofFloat(
+                miniPlayer.rootView,
+                "y",
+                resources.getDimension(R.dimen.mini_player_height),
+                0f).also { it.duration = MINI_DURATION_FULL })
             set.start()
-        } else {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, MiniPlayerFragment())
-                .commitNow()
+        } else if (fragment is MainPlayerFragment) {
+            choose_folder_btn.alpha = 0f
+            val set = AnimatorSet()
+            val miniFragment = MiniPlayerFragment()
+            set.interpolator = LinearInterpolator()
+            val mainAnimator = ObjectAnimator.ofFloat(fragment.fragmentView, "y", fragment.fragmentView.y, displayHeight().toFloat())
+            mainAnimator.duration = MAIN_DURATION_FULL / 2
+            mainAnimator.doOnEnd {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, miniFragment)
+                    .commitNow()
+                val miniAnimator = ObjectAnimator.ofFloat(miniFragment.rootView, "y", resources.getDimension(R.dimen.mini_player_height), 0f)
+                miniAnimator.duration = MINI_DURATION_FULL
+                AnimatorSet().apply {
+                    val alphaAnimator = ObjectAnimator.ofFloat(choose_folder_btn, "alpha", 1f).apply { duration = MINI_DURATION_FULL }
+                    playTogether(miniAnimator, alphaAnimator)
+                    interpolator = LinearInterpolator()
+                    start()
+                }
+            }
+            set.play(mainAnimator)
+            set.start()
         }
     }
 
@@ -223,15 +213,12 @@ class MainActivity : AppCompatActivity(), MainView {
             .commitNow()
     }
 
-    override fun updateSongInfo(song: Song, isPlaying: Boolean) {
-        val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? AbstractPlayerFragment
-        fragment ?: return
-        fragment.updateInfo(song, isPlaying)
-    }
-
-    fun onPlayerEvent(event: PlayerEvent, seekValue : Int = 0) {
-        presenter.onPlayerEvent(event, seekValue)
-    }
-
     fun swapPlayer() = presenter.swapPlayer()
+
+    fun displayHeight(): Int {
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        return size.y
+    }
 }
